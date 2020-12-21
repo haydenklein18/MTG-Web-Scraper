@@ -49,25 +49,16 @@ def scrape():
                 card_text_ele = card_text.find_element_by_class_name("value")
                 card_text_box0 = card_text_ele.find_elements_by_class_name("cardtextbox")
                 card_text_box = ""
-                count = 0
                 for y in card_text_box0:
-                    if count != len(card_text_box0):
-                        if existsTag("img", y):
-
-                            count = count + 1
-                            images = card_text_ele.find_elements_by_tag_name("img")
-                            for j in images:
-                                card_text_box += j.get_attribute("alt")
-                            card_text_box += " "
-                        try:
-                            card_text_box += y.text
-                        except:
-                            print("", end="")
+                    children = y.find_elements_by_xpath(".//*")
+                    for x in children:
+                        if isElement(x,"img"):
+                            card_text_box += x.get_attribute("alt")+" "
+                        elif isElement(x,"i"):
+                            print("",end="")
                         else:
-                            card_text_box += y.text
-                            count = count + 1
-                    else:
-                        card_text_box += y.text
+                            card_text_box += x.text+" "
+                    card_text_box += y.text+" "
                 print("Card Text: " + card_text_box)
             except:
                 print("", end='')
@@ -91,8 +82,7 @@ def scrape():
                 sets_ele = other_sets.find_elements_by_tag_name("img")
                 print("Other Sets: ", end="")
                 for x in sets_ele:
-                    print(x.get_attribute("alt"),end="")
-                print("\n")
+                    print(x.get_attribute("alt"), end="")
             except:
                 print("", end='')
 
@@ -109,7 +99,7 @@ def scrape():
                     "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_CardNumberValue")
                 print("Card Number: " + card_num.text)
             except:
-                print("Error in Card Number", end='')
+                print("", end='')
 
             try:
                 artist = driver.find_element_by_id("ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ArtistCredit")
@@ -149,11 +139,11 @@ def scrape():
             os.remove(alt + ".png")
         pages = driver.find_element_by_class_name("pagingcontrols")
         pages = pages.find_elements_by_tag_name("a")
-        print("Current Page: "+str(f))
+        print("Current Page: " + str(f))
         for j in pages:
             if j.text.isnumeric():
                 if int(j.text) > f:
-                    print("Target Page: "+str(j.text))
+                    print("Target Page: " + str(j.text))
                     print("\n")
                     j.click()
                     win_list = driver.window_handles
@@ -179,6 +169,12 @@ def existsTag(tag, element):
         element.find_elements_by_tag_name(tag)
         return True
     except:
+        return False
+
+def isElement(element, type):
+    if element.tag_name == type:
+        return True
+    else:
         return False
 
 
