@@ -1,10 +1,16 @@
+from random import randint
+
 from selenium import webdriver
+from pymongo import MongoClient
+from pprint import pprint
+
 import os
 
 
 def scrape():
     driver = webdriver.Chrome("C:/Users/kleinh/Downloads/chromedriver_win32/chromedriver.exe")
-    URL = "https://gatherer.wizards.com/Pages/Search/Default.aspx?action=advanced&name=|[a]|[b]|[c]|[d]|[e]|[f]|[g]|[h]|[i]|[j]|[k]|[l]|[m]|[n]|[o]|[p]|[q]|[r]|[s]|[t]|[u]|[v]|[w]|[x]|[y]|[z]"
+    URL = "https://gatherer.wizards.com/Pages/Search/Default.aspx?action=advanced&name=|[a]|[b]|[c]|[d]|[e]|[f]|[g]|[" \
+          "h]|[i]|[j]|[k]|[l]|[m]|[n]|[o]|[p]|[q]|[r]|[s]|[t]|[u]|[v]|[w]|[x]|[y]|[z] "
     driver.get(URL)
     win_list = driver.window_handles
     driver.switch_to.window(win_list[-1])
@@ -14,6 +20,8 @@ def scrape():
                 x = "0" + str(x)
             link = driver.find_element_by_id(
                 "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl00_listRepeater_ctl" + str(x) + "_cardTitle")
+            link.click()
+            link = driver.find_element_by_id("cardTextSwitchLink2")
             link.click()
             win_list = driver.window_handles
             driver.switch_to.window(win_list[-1])
@@ -52,13 +60,13 @@ def scrape():
                 for y in card_text_box0:
                     children = y.find_elements_by_xpath(".//*")
                     for x in children:
-                        if isElement(x,"img"):
-                            card_text_box += x.get_attribute("alt")+" "
-                        elif isElement(x,"i"):
-                            print("",end="")
+                        if isElement(x, "img"):
+                            card_text_box += x.get_attribute("alt") + " "
+                        elif isElement(x, "i"):
+                            print("", end="")
                         else:
-                            card_text_box += x.text+" "
-                    card_text_box += y.text+" "
+                            card_text_box += x.text + " "
+                    card_text_box += y.text + " "
                 print("Card Text: " + card_text_box)
             except:
                 print("", end='')
@@ -115,6 +123,12 @@ def scrape():
             except:
                 print("", end='')
 
+            try:
+                raters = driver.find_element_by_id("ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_currentRating_totalVotes")
+                print("Number of Voter: "+ raters.text)
+            except:
+                print("",end="")
+
             dual_card_bool = existsElement("ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl03_cardImage",
                                            driver)
             if dual_card_bool:
@@ -133,7 +147,7 @@ def scrape():
                     file.write(driver.find_element_by_id(
                         "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl02_cardImage").screenshot_as_png)
 
-            driver.execute_script("window.history.go(-1)")
+            driver.execute_script("window.history.go(-2)")
             print("\n")
 
             os.remove(alt + ".png")
@@ -152,8 +166,24 @@ def scrape():
     driver.close()
 
 
+def load_into_mongodb():
+    client = MongoClient( "mongodb+srv://rocketguitarist11:Rocketman25@cluster0.cne94.mongodb.net/MTGCards?retryWrites=true&w=majority")
+    mydatabase = client["MTGCards"]
+    mycollection = mydatabase["Test"]
+    rec = {
+        'title': 'MongoDB and Python',
+        'description': 'MongoDB is no SQL database',
+        'tags': ['mongodb', 'database', 'NoSQL'],
+        'viewers': 104
+    }
+
+    mycollection.insert_one(rec)
+
+
+
+
 def main():
-    scrape()
+   scrape()
 
 
 def existsElement(id, driver):
@@ -170,6 +200,7 @@ def existsTag(tag, element):
         return True
     except:
         return False
+
 
 def isElement(element, type):
     if element.tag_name == type:
