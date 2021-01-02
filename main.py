@@ -2,12 +2,10 @@ from random import randint
 
 from selenium import webdriver
 from pymongo import MongoClient
-from pprint import pprint
-
-import os
 
 
 def scrape():
+    mongo_client = load_into_mongodb()
     driver = webdriver.Chrome("C:/Users/kleinh/Downloads/chromedriver_win32/chromedriver.exe")
     URL = "https://gatherer.wizards.com/Pages/Search/Default.aspx?action=advanced&name=|[a]|[b]|[c]|[d]|[e]|[f]|[g]|[" \
           "h]|[i]|[j]|[k]|[l]|[m]|[n]|[o]|[p]|[q]|[r]|[s]|[t]|[u]|[v]|[w]|[x]|[y]|[z] "
@@ -16,6 +14,19 @@ def scrape():
     driver.switch_to.window(win_list[-1])
     for f in range(1, 215):
         for x in range(100):
+            card_name = ""
+            mana = ""
+            cmc = -1
+            card_text = ""
+            flavor_text = ""
+            set = ""
+            other_sets = ""
+            rarity = ""
+            card_number = -1
+            artist = ""
+            community_rating = -1.0
+            number_of_voters = -1
+            image_url = ""
             if x < 10:
                 x = "0" + str(x)
             link = driver.find_element_by_id(
@@ -30,27 +41,25 @@ def scrape():
                     "ctl00_ctl00_ctl00_MainContent_SubContent_SubContentHeader_subtitleDisplay")
                 name = name_ele.text
                 name = name.replace("\"", "")
-                print("Card Name: " + name)
+                card_name = name
             except:
-                print("", end='')
+                None
 
             try:
                 big_mana = driver.find_element_by_id("ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_manaRow")
                 mana_ele = big_mana.find_element_by_class_name("value")
                 mana_list = mana_ele.find_elements_by_tag_name("img")
-                print("Mana: ", end="")
                 for z in mana_list:
-                    print(z.get_attribute("alt") + " ", end='')
-
+                    mana += z.get_attribute("alt") + " "
             except:
-                print("", end='')
+                None
 
             try:
                 cmc = driver.find_element_by_id("ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_cmcRow")
                 cmc_ele = cmc.find_element_by_class_name("value")
-                print("\nCMC:" + cmc_ele.text)
+                cmc = int(cmc_ele.text)
             except:
-                print("", end='')
+                None
 
             try:
                 card_text = driver.find_element_by_id("ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_textRow")
@@ -67,90 +76,84 @@ def scrape():
                         else:
                             card_text_box += x.text + " "
                     card_text_box += y.text + " "
-                print("Card Text: " + card_text_box)
+                card_text = card_text_box
             except:
-                print("", end='')
+                None
 
             try:
                 flavor = driver.find_element_by_id("ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_FlavorText")
                 flavor_box = flavor.find_element_by_class_name("flavortextbox")
-                print("Flavor Text: " + flavor_box.text)
+                flavor_text = flavor_box.text
             except:
-                print("", end="")
+                None
 
             try:
                 set = driver.find_element_by_id("ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_currentSetSymbol")
-                print("Set: " + set.text)
+                set = set.text
             except:
-                print("", end='')
+                None
 
             try:
-                other_sets = driver.find_element_by_id(
+                other_sets0 = driver.find_element_by_id(
                     "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_otherSetsValue")
-                sets_ele = other_sets.find_elements_by_tag_name("img")
-                print("Other Sets: ", end="")
-                for x in sets_ele:
-                    print(x.get_attribute("alt"), end="")
+                sets_ele = other_sets0.find_elements_by_tag_name("img")
+                for p in sets_ele:
+                    other_sets += p.get_attribute("alt") + " , "
             except:
-                print("", end='')
+                None
 
             try:
                 rarity = driver.find_element_by_id("ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_rarityRow")
                 rarity_ele = rarity.find_element_by_class_name("value")
                 rarity_span = rarity_ele.find_elements_by_tag_name("span")
-                print("Rarity: " + rarity_span[0].text)
+                rarity = rarity_span[0].text
             except:
-                print("", end='')
+                None
 
             try:
                 card_num = driver.find_element_by_id(
                     "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_CardNumberValue")
-                print("Card Number: " + card_num.text)
+                card_number = int(card_num.text)
             except:
-                print("", end='')
+                None
 
             try:
                 artist = driver.find_element_by_id("ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ArtistCredit")
                 artist_ele = artist.find_element_by_tag_name("a")
-                print("Artist: " + artist_ele.text)
+                artist = artist_ele.text
             except:
-                print("", end='')
+                None
 
             try:
                 rating = driver.find_element_by_id(
                     "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_currentRating_textRating")
-                print("Community Rating: " + rating.text + "/5")
+                community_rating = float(rating.text)
             except:
-                print("", end='')
+                None
 
             try:
-                raters = driver.find_element_by_id("ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_currentRating_totalVotes")
-                print("Number of Voter: "+ raters.text)
+                raters = driver.find_element_by_id(
+                    "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_currentRating_totalVotes")
+                number_of_voters = int(raters.text)
             except:
-                print("",end="")
+                None
 
             dual_card_bool = existsElement("ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl03_cardImage",
                                            driver)
-            if dual_card_bool:
-                png = driver.find_element_by_id("ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl02_cardImage")
-            else:
-                png = driver.find_element_by_id("ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_cardImage")
-            alt = png.get_attribute("alt")
-            alt = alt.replace("\"", "")
 
             if not dual_card_bool:
-                with open(alt + ".png", 'wb') as file:
-                    file.write(driver.find_element_by_id(
-                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_cardImage").screenshot_as_png)
+                image_url = driver.find_element_by_id(
+                    "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_cardImage").get_attribute("src")
             else:
-                with open(alt + ".png", 'wb') as file:
-                    file.write(driver.find_element_by_id(
-                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl02_cardImage").screenshot_as_png)
+                image_url = driver.find_element_by_id(
+                    "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl02_cardImage").get_attribute("src")
 
             driver.execute_script("window.history.go(-2)")
             print("\n")
-
-            os.remove(alt + ".png")
+            add_to_mongodb(mongo_client, card_name, mana, cmc, card_text, flavor_text, set, other_sets, rarity,
+                           card_number, artist,
+                           community_rating, number_of_voters, image_url)
+            print("Added " + card_name + " without issue")
         pages = driver.find_element_by_class_name("pagingcontrols")
         pages = pages.find_elements_by_tag_name("a")
         print("Current Page: " + str(f))
@@ -167,23 +170,58 @@ def scrape():
 
 
 def load_into_mongodb():
-    client = MongoClient( "mongodb+srv://rocketguitarist11:Rocketman25@cluster0.cne94.mongodb.net/MTGCards?retryWrites=true&w=majority")
+    client = MongoClient(
+        "mongodb+srv://rocketguitarist11:Rocketman25@cluster0.cne94.mongodb.net/MTGCards?retryWrites=true&w=majority")
     mydatabase = client["MTGCards"]
-    mycollection = mydatabase["Test"]
-    rec = {
-        'title': 'MongoDB and Python',
-        'description': 'MongoDB is no SQL database',
-        'tags': ['mongodb', 'database', 'NoSQL'],
-        'viewers': 104
-    }
-
-    mycollection.insert_one(rec)
+    if "Card Information" in mydatabase.list_collection_names():
+        connection = mydatabase["Card Information"]
+        connection.drop()
+    col = mydatabase["Card Information"]
+    return client
 
 
+def add_to_mongodb(mongo_client, card_name, mana, cmc, card_text, flavor_text, set, other_sets, rarity, card_number,
+                   artist, community_rating, number_of_voters, image_url):
+    database = mongo_client["MTGCards"]
+    card_info = database['Card Information']
+    doc = {"Card Name": card_name,
+           "Mana Cost": mana,
+           "Converted Mana Cost": cmc,
+           "Card Text": card_text,
+           "Flavor Text": flavor_text,
+           "Set": set,
+           "Other Sets": other_sets,
+           "Rarity": rarity,
+           "Card Number": card_number,
+           "Artist": artist,
+           "Community Rating": community_rating,
+           "Number of Voters": number_of_voters,
+           "Image URL": image_url,
+           }
+    check_type(card_name,"name")
+    check_type(mana,"mana")
+    check_type(cmc,"cmc")
+    check_type(card_text,"text")
+    check_type(flavor_text,"flavor")
+    check_type(set,"set")
+    check_type(other_sets,"other sets")
+    check_type(rarity,"rarity")
+    check_type(card_number,"card num")
+    check_type(artist,"artist")
+    check_type(community_rating,"rating")
+    check_type(number_of_voters,"voters")
+    check_type(image_url,"url")
+
+    card_info.insert_one(doc)
+
+
+def check_type(thing, id):
+    if type(thing) != int and type(thing) and type(thing) != float and type(thing) != str:
+        print(id + " is not a string int or float")
 
 
 def main():
-   scrape()
+    scrape()
 
 
 def existsElement(id, driver):
