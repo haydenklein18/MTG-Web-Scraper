@@ -26,7 +26,6 @@ def scrape():
             artist = ""
             community_rating = -1.0
             number_of_voters = -1
-            image_url = ""
             if x < 10:
                 x = "0" + str(x)
             link = driver.find_element_by_id(
@@ -198,19 +197,19 @@ def add_to_mongodb(mongo_client, card_name, mana, cmc, card_text, flavor_text, s
            "Number of Voters": number_of_voters,
            "Image URL": image_url,
            }
-    check_type(card_name,"name")
-    check_type(mana,"mana")
-    check_type(cmc,"cmc")
-    check_type(card_text,"text")
-    check_type(flavor_text,"flavor")
-    check_type(set,"set")
-    check_type(other_sets,"other sets")
-    check_type(rarity,"rarity")
-    check_type(card_number,"card num")
-    check_type(artist,"artist")
-    check_type(community_rating,"rating")
-    check_type(number_of_voters,"voters")
-    check_type(image_url,"url")
+    check_type(card_name, "name")
+    check_type(mana, "mana")
+    check_type(cmc, "cmc")
+    check_type(card_text, "text")
+    check_type(flavor_text, "flavor")
+    check_type(set, "set")
+    check_type(other_sets, "other sets")
+    check_type(rarity, "rarity")
+    check_type(card_number, "card num")
+    check_type(artist, "artist")
+    check_type(community_rating, "rating")
+    check_type(number_of_voters, "voters")
+    check_type(image_url, "url")
 
     card_info.insert_one(doc)
 
