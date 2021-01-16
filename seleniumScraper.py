@@ -2,6 +2,16 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from pymongo import MongoClient
 import time
+from bisect import bisect_left
+import bisect
+
+
+def BinarySearch(a, x):
+    i = bisect_left(a, x)
+    if i != len(a) and a[i] == x:
+        return True
+    else:
+        return False
 
 
 def scrape():
@@ -15,24 +25,18 @@ def scrape():
     driver.get(URL)
     win_list = driver.window_handles
     driver.switch_to.window(win_list[-1])
+    name_list = []
+    try:
+        link = driver.find_element_by_id("wizardCookieBannerOptIn")
+        link.click()
+    except:
+        None
     for f in range(1, 215):
         for x in range(100):
-            count = count + 1
             start = time.time()
-            card_name = ""
-            mana = ""
-            cmc = -1
-            card_text = ""
-            flavor_text = ""
-            set = ""
-            other_sets = ""
-            rarity = ""
-            card_number = -1
-            artist = ""
-            community_rating = -1.0
-            number_of_voters = -1
             if x < 10:
                 x = "0" + str(x)
+
             link = driver.find_element_by_id(
                 "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl00_listRepeater_ctl" + str(
                     x) + "_cardTitle")
@@ -45,16 +49,504 @@ def scrape():
                                            driver)
             modal_card_bool = existsElement("ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl04_cardImage",
                                             driver)
-            print(dual_card_bool)
-            print(modal_card_bool)
-            if dual_card_bool:
-                print("dual")
-                # TODO Write Support for dual cards
-            elif modal_card_bool:
-                print("modal")
-                # TODO Write Support for modal cards
-            else:
 
+            if dual_card_bool:
+                card1_name = ""
+                mana1 = ""
+                cmc1 = -1
+                card1_text = ""
+                flavor1_text = ""
+                set1 = ""
+                other1_sets = ""
+                rarity1 = ""
+                card1_number = -1
+                artist1 = ""
+                community1_rating = -1.0
+                number1_of_voters = -1
+                card2_name = ""
+                mana2 = ""
+                cmc2 = -1
+                card2_text = ""
+                flavor2_text = ""
+                set2 = ""
+                other2_sets = ""
+                rarity2 = ""
+                card2_number = -1
+                artist2 = ""
+                community2_rating = -1.0
+                number2_of_voters = -1
+
+                try:
+                    name_ele = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl02_nameRow")
+                    name = name_ele.find_element_by_class_name("value")
+                    name = name.text
+                    name = name.replace("\"", "")
+                    card1_name = name
+                    name_ele = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl03_nameRow")
+                    name = name_ele.find_element_by_class_name("value")
+                    name = name.text
+                    name = name.replace("\"", "")
+                    card2_name = name
+
+                except:
+                    None
+
+                try:
+                    big_mana = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl02_manaRow")
+                    mana_ele = big_mana.find_element_by_class_name("value")
+                    mana_list = mana_ele.find_elements_by_tag_name("img")
+                    for z in mana_list:
+                        mana1 += z.get_attribute("alt") + " "
+                    big_mana = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl03_manaRow")
+                    mana_ele = big_mana.find_element_by_class_name("value")
+                    mana_list = mana_ele.find_elements_by_tag_name("img")
+                    for z in mana_list:
+                        mana2 += z.get_attribute("alt") + " "
+                except:
+                    None
+
+                try:
+                    cmc = driver.find_element_by_id("ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl02_cmcRow")
+                    cmc_ele = cmc.find_element_by_class_name("value")
+                    cmc1 = int(cmc_ele.text)
+
+                    cmc = driver.find_element_by_id("ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl03_cmcRow")
+                    cmc_ele = cmc.find_element_by_class_name("value")
+                    cmc1 = int(cmc_ele.text)
+                except:
+                    None
+
+                try:
+                    card_text = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl02_textRow")
+                    card_text_ele = card_text.find_element_by_class_name("value")
+                    card_text_box0 = card_text_ele.find_elements_by_class_name("cardtextbox")
+                    card_text_box = ""
+                    for y in card_text_box0:
+                        children = y.find_elements_by_xpath(".//*")
+                        for x in children:
+                            if isElement(x, "img"):
+                                card_text_box += x.get_attribute("alt") + " "
+                            elif isElement(x, "i"):
+                                print("", end="")
+                            else:
+                                card_text_box += x.text + " "
+                        card_text_box += y.text + " "
+                    card1_text = card_text_box
+
+                    card_text = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl03_textRow")
+                    card_text_ele = card_text.find_element_by_class_name("value")
+                    card_text_box0 = card_text_ele.find_elements_by_class_name("cardtextbox")
+                    card_text_box = ""
+                    for y in card_text_box0:
+                        children = y.find_elements_by_xpath(".//*")
+                        for x in children:
+                            if isElement(x, "img"):
+                                card_text_box += x.get_attribute("alt") + " "
+                            elif isElement(x, "i"):
+                                print("", end="")
+                            else:
+                                card_text_box += x.text + " "
+                        card_text_box += y.text + " "
+                    card2_text = card_text_box
+                except:
+                    None
+
+                try:
+                    flavor = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl02_FlavorText")
+                    flavor_box = flavor.find_element_by_class_name("cardtextbox")
+                    flavor1_text = flavor_box.text
+
+                    flavor = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl03_FlavorText")
+                    flavor_box = flavor.find_element_by_class_name("cardtextbox")
+                    flavor1_text = flavor_box.text
+                except:
+                    None
+
+                try:
+                    set = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl02_currentSetSymbol")
+                    set1 = set.text
+
+                    set = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl03_currentSetSymbol")
+                    set2 = set.text
+                except:
+                    None
+
+                try:
+                    other_sets0 = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl02_otherSetsRow")
+                    sets_ele = other_sets0.find_elements_by_tag_name("img")
+                    for p in sets_ele:
+                        other1_sets += p.get_attribute("alt") + " , "
+
+                    other_sets0 = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl03_otherSetsRow")
+                    sets_ele = other_sets0.find_elements_by_tag_name("img")
+                    for p in sets_ele:
+                        other2_sets += p.get_attribute("alt") + " , "
+                except:
+                    None
+
+                try:
+                    rarity = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl02_rarityRow")
+                    rarity_ele = rarity.find_element_by_class_name("value")
+                    rarity_span = rarity_ele.find_elements_by_tag_name("span")
+                    rarity1 = rarity_span[0].text
+
+                    rarity = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl03_rarityRow")
+                    rarity_ele = rarity.find_element_by_class_name("value")
+                    rarity_span = rarity_ele.find_elements_by_tag_name("span")
+                    rarity2 = rarity_span[0].text
+                except:
+                    None
+
+                try:
+                    card_num = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl02_numberRow")
+                    card1_number = int(card_num.text)
+
+                    card_num = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl03_numberRow")
+                    card2_number = int(card_num.text)
+                except:
+                    None
+
+                try:
+                    artist = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl02_ArtistCredit")
+                    artist_ele = artist.find_element_by_tag_name("a")
+                    artist1 = artist_ele.text
+
+                    artist = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl03_ArtistCredit")
+                    artist_ele = artist.find_element_by_tag_name("a")
+                    artist2 = artist_ele.text
+                except:
+                    None
+
+                try:
+                    rating = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl02_currentRating_textRating")
+                    community1_rating = float(rating.text)
+
+                    rating = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl03_currentRating_textRating")
+                    community2_rating = float(rating.text)
+                except:
+                    None
+
+                try:
+                    raters = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl02_currentRating_totalVotes")
+                    number1_of_voters = int(raters.text)
+
+                    raters = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl03_currentRating_totalVotes")
+                    number2_of_voters = int(raters.text)
+                except:
+                    None
+
+                image1_url = driver.find_element_by_id(
+                    "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl02_cardImage").get_attribute("src")
+
+                image2_url = driver.find_element_by_id(
+                    "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl02_cardImage").get_attribute("src")
+
+                driver.execute_script("window.history.go(-2)")
+                if not BinarySearch(name_list, card1_name):
+                    add_to_mongodb(mongo_client, card1_name, mana1, cmc1, card1_text, flavor1_text, set1, other1_sets,
+                                   rarity1,
+                                   card1_number, artist1,
+                                   community1_rating, number1_of_voters, image1_url)
+
+                    bisect.insort(name_list, card1_name)
+                if not BinarySearch(name_list, card2_name):
+                    add_to_mongodb(mongo_client, card2_name, mana2, cmc2, card2_text, flavor2_text, set2, other2_sets,
+                                   rarity2,
+                                   card2_number, artist2,
+                                   community2_rating, number2_of_voters, image2_url)
+                    bisect.insort(name_list, card2_name)
+                end = time.time()
+                time_taken = end - start
+                total_seconds = total_seconds + time_taken
+                count = count + 1
+                print("Added " + card1_name + " without issue, total time time for scrape and entry: " + str(
+                    time_taken / 2)
+                      + " seconds. Total time elapsed: " + str(
+                    total_seconds) + " seconds . This card is Number: " + str(count))
+                count = count + 1
+                print("Added " + card2_name + " without issue, total time time for scrape and entry: " + str(
+                    time_taken / 2)
+                      + " seconds. Total time elapsed: " + str(
+                    total_seconds) + " seconds . This card is Number: " + str(count))
+
+            elif modal_card_bool:
+                card1_name = ""
+                mana1 = ""
+                cmc1 = -1
+                card1_text = ""
+                flavor1_text = ""
+                set1 = ""
+                other1_sets = ""
+                rarity1 = ""
+                card1_number = -1
+                artist1 = ""
+                community1_rating = -1.0
+                number1_of_voters = -1
+                card2_name = ""
+                mana2 = ""
+                cmc2 = -1
+                card2_text = ""
+                flavor2_text = ""
+                set2 = ""
+                other2_sets = ""
+                rarity2 = ""
+                card2_number = -1
+                artist2 = ""
+                community2_rating = -1.0
+                number2_of_voters = -1
+
+                try:
+                    name_ele = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl03_nameRow")
+                    name = name_ele.find_element_by_class_name("value")
+                    name = name.text
+                    name = name.replace("\"", "")
+                    card1_name = name
+                    name_ele = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl04_nameRow")
+                    name = name_ele.find_element_by_class_name("value")
+                    name = name.text
+                    name = name.replace("\"", "")
+                    card2_name = name
+                except:
+                    None
+
+                try:
+                    big_mana = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl03_manaRow")
+                    mana_ele = big_mana.find_element_by_class_name("value")
+                    mana_list = mana_ele.find_elements_by_tag_name("img")
+                    for z in mana_list:
+                        mana1 += z.get_attribute("alt") + " "
+                    big_mana = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl04_manaRow")
+                    mana_ele = big_mana.find_element_by_class_name("value")
+                    mana_list = mana_ele.find_elements_by_tag_name("img")
+                    for z in mana_list:
+                        mana2 += z.get_attribute("alt") + " "
+                except:
+                    None
+
+                try:
+                    cmc = driver.find_element_by_id("ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl03_cmcRow")
+                    cmc_ele = cmc.find_element_by_class_name("value")
+                    cmc1 = int(cmc_ele.text)
+
+                    cmc = driver.find_element_by_id("ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl04_cmcRow")
+                    cmc_ele = cmc.find_element_by_class_name("value")
+                    cmc1 = int(cmc_ele.text)
+                except:
+                    None
+
+                try:
+                    card_text = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl03_textRow")
+                    card_text_ele = card_text.find_element_by_class_name("value")
+                    card_text_box0 = card_text_ele.find_elements_by_class_name("cardtextbox")
+                    card_text_box = ""
+                    for y in card_text_box0:
+                        children = y.find_elements_by_xpath(".//*")
+                        for x in children:
+                            if isElement(x, "img"):
+                                card_text_box += x.get_attribute("alt") + " "
+                            elif isElement(x, "i"):
+                                print("", end="")
+                            else:
+                                card_text_box += x.text + " "
+                        card_text_box += y.text + " "
+                    card1_text = card_text_box
+
+                    card_text = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl04_textRow")
+                    card_text_ele = card_text.find_element_by_class_name("value")
+                    card_text_box0 = card_text_ele.find_elements_by_class_name("cardtextbox")
+                    card_text_box = ""
+                    for y in card_text_box0:
+                        children = y.find_elements_by_xpath(".//*")
+                        for x in children:
+                            if isElement(x, "img"):
+                                card_text_box += x.get_attribute("alt") + " "
+                            elif isElement(x, "i"):
+                                print("", end="")
+                            else:
+                                card_text_box += x.text + " "
+                        card_text_box += y.text + " "
+                    card2_text = card_text_box
+                except:
+                    None
+
+                try:
+                    flavor = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl03_FlavorText")
+                    flavor_box = flavor.find_element_by_class_name("cardtextbox")
+                    flavor1_text = flavor_box.text
+
+                    flavor = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl04_FlavorText")
+                    flavor_box = flavor.find_element_by_class_name("cardtextbox")
+                    flavor1_text = flavor_box.text
+                except:
+                    None
+
+                try:
+                    set = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl03_currentSetSymbol")
+                    set1 = set.text
+
+                    set = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl04_currentSetSymbol")
+                    set2 = set.text
+                except:
+                    None
+
+                try:
+                    other_sets0 = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl03_otherSetsRow")
+                    sets_ele = other_sets0.find_elements_by_tag_name("img")
+                    for p in sets_ele:
+                        other1_sets += p.get_attribute("alt") + " , "
+
+                    other_sets0 = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl04_otherSetsRow")
+                    sets_ele = other_sets0.find_elements_by_tag_name("img")
+                    for p in sets_ele:
+                        other2_sets += p.get_attribute("alt") + " , "
+                except:
+                    None
+
+                try:
+                    rarity = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl03_rarityRow")
+                    rarity_ele = rarity.find_element_by_class_name("value")
+                    rarity_span = rarity_ele.find_elements_by_tag_name("span")
+                    rarity1 = rarity_span[0].text
+
+                    rarity = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl04_rarityRow")
+                    rarity_ele = rarity.find_element_by_class_name("value")
+                    rarity_span = rarity_ele.find_elements_by_tag_name("span")
+                    rarity2 = rarity_span[0].text
+                except:
+                    None
+
+                try:
+                    card_num = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl03_numberRow")
+                    card1_number = int(card_num.text)
+
+                    card_num = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl04_numberRow")
+                    card2_number = int(card_num.text)
+                except:
+                    None
+
+                try:
+                    artist = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl03_ArtistCredit")
+                    artist_ele = artist.find_element_by_tag_name("a")
+                    artist1 = artist_ele.text
+
+                    artist = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl04_ArtistCredit")
+                    artist_ele = artist.find_element_by_tag_name("a")
+                    artist2 = artist_ele.text
+                except:
+                    None
+
+                try:
+                    rating = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl03_currentRating_textRating")
+                    community1_rating = float(rating.text)
+
+                    rating = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl04_currentRating_textRating")
+                    community2_rating = float(rating.text)
+                except:
+                    None
+
+                try:
+                    raters = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl03_currentRating_totalVotes")
+                    number1_of_voters = int(raters.text)
+
+                    raters = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl04_currentRating_totalVotes")
+                    number2_of_voters = int(raters.text)
+                except:
+                    None
+
+                image1_url = driver.find_element_by_id(
+                    "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl03_cardImage").get_attribute("src")
+
+                image2_url = driver.find_element_by_id(
+                    "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl04_cardImage").get_attribute("src")
+
+                driver.execute_script("window.history.go(-2)")
+                if not BinarySearch(name_list, card1_name):
+                    add_to_mongodb(mongo_client, card1_name, mana1, cmc1, card1_text, flavor1_text, set1, other1_sets,
+                                   rarity1,
+                                   card1_number, artist1,
+                                   community1_rating, number1_of_voters, image1_url)
+
+                    bisect.insort(name_list, card1_name)
+                if not BinarySearch(name_list, card2_name):
+                    add_to_mongodb(mongo_client, card2_name, mana2, cmc2, card2_text, flavor2_text, set2, other2_sets,
+                                   rarity2,
+                                   card2_number, artist2,
+                                   community2_rating, number2_of_voters, image2_url)
+                    bisect.insort(name_list, card2_name)
+                end = time.time()
+                time_taken = end - start
+                total_seconds = total_seconds + time_taken
+                count = count + 1
+                print("Added " + card1_name + " without issue, total time time for scrape and entry: " + str(
+                    time_taken / 2)
+                      + " seconds. Total time elapsed: " + str(
+                    total_seconds) + " seconds . This card is Number: " + str(count))
+                count = count + 1
+                print("Added " + card2_name + " without issue, total time time for scrape and entry: " + str(
+                    time_taken / 2)
+                      + " seconds. Total time elapsed: " + str(
+                    total_seconds) + " seconds . This card is Number: " + str(count))
+
+
+            else:
+                count = count + 1
+                start = time.time()
+                card_name = ""
+                mana = ""
+                cmc = -1
+                card_text = ""
+                flavor_text = ""
+                set = ""
+                other_sets = ""
+                rarity = ""
+                card_number = -1
+                artist = ""
+                community_rating = -1.0
+                number_of_voters = -1
                 try:
                     name_ele = driver.find_element_by_id(
                         "ctl00_ctl00_ctl00_MainContent_SubContent_SubContentHeader_subtitleDisplay")
@@ -163,9 +655,11 @@ def scrape():
                     "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_cardImage").get_attribute("src")
 
                 driver.execute_script("window.history.go(-2)")
-                add_to_mongodb(mongo_client, card_name, mana, cmc, card_text, flavor_text, set, other_sets, rarity,
-                               card_number, artist,
-                               community_rating, number_of_voters, image_url)
+                if not BinarySearch(name_list, card_name):
+                    add_to_mongodb(mongo_client, card_name, mana, cmc, card_text, flavor_text, set, other_sets, rarity,
+                                   card_number, artist,
+                                   community_rating, number_of_voters, image_url)
+                    bisect.insort(name_list, card_name)
                 end = time.time()
                 time_taken = end - start
                 total_seconds = total_seconds + time_taken
