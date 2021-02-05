@@ -54,6 +54,7 @@ def scrape():
                 card1_name = ""
                 mana1 = ""
                 cmc1 = -1
+                card1_type = ""
                 card1_text = ""
                 flavor1_text = ""
                 set1 = ""
@@ -66,6 +67,7 @@ def scrape():
                 card2_name = ""
                 mana2 = ""
                 cmc2 = -1
+                card2_type = ""
                 card2_text = ""
                 flavor2_text = ""
                 set2 = ""
@@ -117,6 +119,17 @@ def scrape():
                     cmc = driver.find_element_by_id("ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl03_cmcRow")
                     cmc_ele = cmc.find_element_by_class_name("value")
                     cmc1 = int(cmc_ele.text)
+                except:
+                    None
+
+                try:
+                    type = driver.find_element_by_id("ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl02_cmcRow")
+                    type_ele = type.find_element_by_class_name("value")
+                    card1_type = type_ele.text
+
+                    type = driver.find_element_by_id("ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl03_cmcRow")
+                    type_ele = type.find_element_by_class_name("value")
+                    card2_type = type_ele.text
                 except:
                     None
 
@@ -265,14 +278,16 @@ def scrape():
 
                 driver.execute_script("window.history.go(-2)")
                 if not BinarySearch(name_list, card1_name):
-                    add_to_mongodb(mongo_client, card1_name, mana1, cmc1, card1_text, flavor1_text, set1, other1_sets,
+                    add_to_mongodb(mongo_client, card1_name, mana1, cmc1, card1_type, card1_text, flavor1_text, set1,
+                                   other1_sets,
                                    rarity1,
                                    card1_number, artist1,
                                    community1_rating, number1_of_voters, image1_url)
 
                     bisect.insort(name_list, card1_name)
                 if not BinarySearch(name_list, card2_name):
-                    add_to_mongodb(mongo_client, card2_name, mana2, cmc2, card2_text, flavor2_text, set2, other2_sets,
+                    add_to_mongodb(mongo_client, card2_name, mana2, cmc2, card2_type, card2_text, flavor2_text, set2,
+                                   other2_sets,
                                    rarity2,
                                    card2_number, artist2,
                                    community2_rating, number2_of_voters, image2_url)
@@ -295,6 +310,7 @@ def scrape():
                 card1_name = ""
                 mana1 = ""
                 cmc1 = -1
+                card1_type = ""
                 card1_text = ""
                 flavor1_text = ""
                 set1 = ""
@@ -307,6 +323,7 @@ def scrape():
                 card2_name = ""
                 mana2 = ""
                 cmc2 = -1
+                card2_type = ""
                 card2_text = ""
                 flavor2_text = ""
                 set2 = ""
@@ -357,6 +374,17 @@ def scrape():
                     cmc = driver.find_element_by_id("ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl04_cmcRow")
                     cmc_ele = cmc.find_element_by_class_name("value")
                     cmc1 = int(cmc_ele.text)
+                except:
+                    None
+
+                try:
+                    type = driver.find_element_by_id("ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl03_cmcRow")
+                    type_ele = type.find_element_by_class_name("value")
+                    card1_type = type_ele.text
+
+                    type = driver.find_element_by_id("ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_ctl04_cmcRow")
+                    type_ele = type.find_element_by_class_name("value")
+                    card2_type = type_ele.text
                 except:
                     None
 
@@ -505,14 +533,14 @@ def scrape():
 
                 driver.execute_script("window.history.go(-2)")
                 if not BinarySearch(name_list, card1_name):
-                    add_to_mongodb(mongo_client, card1_name, mana1, cmc1, card1_text, flavor1_text, set1, other1_sets,
+                    add_to_mongodb(mongo_client, card1_name, mana1, cmc1,card1_type, card1_text, flavor1_text, set1, other1_sets,
                                    rarity1,
                                    card1_number, artist1,
                                    community1_rating, number1_of_voters, image1_url)
 
                     bisect.insort(name_list, card1_name)
                 if not BinarySearch(name_list, card2_name):
-                    add_to_mongodb(mongo_client, card2_name, mana2, cmc2, card2_text, flavor2_text, set2, other2_sets,
+                    add_to_mongodb(mongo_client, card2_name, mana2, cmc2,card2_type, card2_text, flavor2_text, set2, other2_sets,
                                    rarity2,
                                    card2_number, artist2,
                                    community2_rating, number2_of_voters, image2_url)
@@ -538,6 +566,7 @@ def scrape():
                 card_name = ""
                 mana = ""
                 cmc = -1
+                card_type = ""
                 card_text = ""
                 flavor_text = ""
                 set = ""
@@ -547,6 +576,7 @@ def scrape():
                 artist = ""
                 community_rating = -1.0
                 number_of_voters = -1
+                image_url = ""
                 try:
                     name_ele = driver.find_element_by_id(
                         "ctl00_ctl00_ctl00_MainContent_SubContent_SubContentHeader_subtitleDisplay")
@@ -569,6 +599,13 @@ def scrape():
                     cmc = driver.find_element_by_id("ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_cmcRow")
                     cmc_ele = cmc.find_element_by_class_name("value")
                     cmc = int(cmc_ele.text)
+                except:
+                    None
+
+                try:
+                    type = driver.find_element_by_id("ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_typeRow")
+                    type_ele = type.find_element_by_class_name("value")
+                    card_type = type_ele.text
                 except:
                     None
 
@@ -651,12 +688,16 @@ def scrape():
                 except:
                     None
 
-                image_url = driver.find_element_by_id(
-                    "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_cardImage").get_attribute("src")
+                try:
+
+                    image_url = driver.find_element_by_id(
+                        "ctl00_ctl00_ctl00_MainContent_SubContent_SubContent_cardImage").get_attribute("src")
+                except:
+                    None
 
                 driver.execute_script("window.history.go(-2)")
                 if not BinarySearch(name_list, card_name):
-                    add_to_mongodb(mongo_client, card_name, mana, cmc, card_text, flavor_text, set, other_sets, rarity,
+                    add_to_mongodb(mongo_client, card_name, mana, cmc,card_type, card_text, flavor_text, set, other_sets, rarity,
                                    card_number, artist,
                                    community_rating, number_of_voters, image_url)
                     bisect.insort(name_list, card_name)
@@ -687,8 +728,10 @@ def scrape():
 
 
 def load_into_mongodb():
-    client = MongoClient(
-        "mongodb+srv://rocketguitarist11:Rocketman25@cluster0.cne94.mongodb.net/MTGCards?retryWrites=true&w=majority")
+    data = ""
+    with open('MTG-Web-Scraper/mongoDB.txt', 'r') as file:
+        data = file.read().replace('\n', '')
+    client = MongoClient(data)
     mydatabase = client["MTGCards"]
     if "Card Information" in mydatabase.list_collection_names():
         connection = mydatabase["Card Information"]
@@ -697,13 +740,14 @@ def load_into_mongodb():
     return client
 
 
-def add_to_mongodb(mongo_client, card_name, mana, cmc, card_text, flavor_text, set, other_sets, rarity, card_number,
+def add_to_mongodb(mongo_client, card_name, mana, cmc, type, card_text, flavor_text, set, other_sets, rarity, card_number,
                    artist, community_rating, number_of_voters, image_url):
     database = mongo_client["MTGCards"]
     card_info = database['Card Information']
     doc = {"Card Name": card_name,
            "Mana Cost": mana,
            "Converted Mana Cost": cmc,
+           "Card Type":type,
            "Card Text": card_text,
            "Flavor Text": flavor_text,
            "Set": set,
@@ -718,6 +762,7 @@ def add_to_mongodb(mongo_client, card_name, mana, cmc, card_text, flavor_text, s
     check_type(card_name, "name")
     check_type(mana, "mana")
     check_type(cmc, "cmc")
+    check_type(type, "type")
     check_type(card_text, "text")
     check_type(flavor_text, "flavor")
     check_type(set, "set")
