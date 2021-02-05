@@ -533,14 +533,16 @@ def scrape():
 
                 driver.execute_script("window.history.go(-2)")
                 if not BinarySearch(name_list, card1_name):
-                    add_to_mongodb(mongo_client, card1_name, mana1, cmc1,card1_type, card1_text, flavor1_text, set1, other1_sets,
+                    add_to_mongodb(mongo_client, card1_name, mana1, cmc1, card1_type, card1_text, flavor1_text, set1,
+                                   other1_sets,
                                    rarity1,
                                    card1_number, artist1,
                                    community1_rating, number1_of_voters, image1_url)
 
                     bisect.insort(name_list, card1_name)
                 if not BinarySearch(name_list, card2_name):
-                    add_to_mongodb(mongo_client, card2_name, mana2, cmc2,card2_type, card2_text, flavor2_text, set2, other2_sets,
+                    add_to_mongodb(mongo_client, card2_name, mana2, cmc2, card2_type, card2_text, flavor2_text, set2,
+                                   other2_sets,
                                    rarity2,
                                    card2_number, artist2,
                                    community2_rating, number2_of_voters, image2_url)
@@ -697,7 +699,8 @@ def scrape():
 
                 driver.execute_script("window.history.go(-2)")
                 if not BinarySearch(name_list, card_name):
-                    add_to_mongodb(mongo_client, card_name, mana, cmc,card_type, card_text, flavor_text, set, other_sets, rarity,
+                    add_to_mongodb(mongo_client, card_name, mana, cmc, card_type, card_text, flavor_text, set,
+                                   other_sets, rarity,
                                    card_number, artist,
                                    community_rating, number_of_voters, image_url)
                     bisect.insort(name_list, card_name)
@@ -724,12 +727,13 @@ def scrape():
         print("Current average time taken: " + str(total_seconds / count))
         print("\n")
     driver.close()
+
     print("Total scrape done hooray!! That took way too long :p")
 
 
 def load_into_mongodb():
     data = ""
-    with open('MTG-Web-Scraper/mongoDB.txt', 'r') as file:
+    with open('mongoDB.txt', 'r') as file:
         data = file.read().replace('\n', '')
     client = MongoClient(data)
     mydatabase = client["MTGCards"]
@@ -740,14 +744,15 @@ def load_into_mongodb():
     return client
 
 
-def add_to_mongodb(mongo_client, card_name, mana, cmc, type, card_text, flavor_text, set, other_sets, rarity, card_number,
+def add_to_mongodb(mongo_client, card_name, mana, cmc, type, card_text, flavor_text, set, other_sets, rarity,
+                   card_number,
                    artist, community_rating, number_of_voters, image_url):
     database = mongo_client["MTGCards"]
     card_info = database['Card Information']
     doc = {"Card Name": card_name,
            "Mana Cost": mana,
            "Converted Mana Cost": cmc,
-           "Card Type":type,
+           "Card Type": type,
            "Card Text": card_text,
            "Flavor Text": flavor_text,
            "Set": set,
@@ -779,6 +784,12 @@ def add_to_mongodb(mongo_client, card_name, mana, cmc, type, card_text, flavor_t
 def check_type(thing, id):
     if type(thing) != int and type(thing) and type(thing) != float and type(thing) != str:
         print(id + " is not a string int or float")
+
+
+def mongoDbToCSV(mongo_client):
+    database = mongo_client["MTGCards"]
+    card_info = database['Card Information']
+
 
 
 def main():
