@@ -21,7 +21,7 @@ no_blue = ["White", "Black", "Red", "Green"]
 no_black = ["White", "Blue", "Red", "Green"]
 no_red = ["White", "Blue", "Black", "Green"]
 no_green = ["White", "Blue", "Black", "Red"]
-abzan = ["White", "Black" "Green"]
+abzan = ["White", "Black", "Green"]
 mardu = ["White", "Black", "Red"]
 sultai = ["Blue", "Black", "Green"]
 jeskai = ["White", "Blue", "Red"]
@@ -47,43 +47,54 @@ three_colors = [abzan, jeskai, mardu, temur, sultai, grixis, esper, naya, jund, 
 two_colors = [azorious, gruul, dimir, golgari, simic, selesnya, izzet, orzhov, boros, rakdos]
 
 for string in data["Mana Cost"]:
-    if all(x in string for x in wubrg) and not is_number(string):
-        colors.append("All Colors")
-        print(string)
-    if not any(x in string for x in wubrg):
-        colors.append("Colorless")
-        print(string)
-    for z in four_colors:
-        if all(x in string for x in z) and not is_number(string):
-            colors.append(" ".join(z))
-            print(string)
-    for z in three_colors:
-        if all(x in string for x in z) and not is_number(string):
-            colors.append(" ".join(z))
-            print(string)
-    for z in two_colors:
-        if all(x in string for x in z) and not is_number(string):
-            colors.append(" ".join(z))
-            print(string)
-    # TODO: Triple colors are being used for double colors as well casing more than one to be added
-    if not any(x in string for x in no_white) and string != 'false' and not is_number(string):
-        colors.append("White")
-        print(string)
-    if not any(x in string for x in no_blue) and string != 'false' and not is_number(string):
-        colors.append("Blue")
-        print(string)
-    if not any(x in string for x in no_black) and string != 'false' and not is_number(string):
-        colors.append("Black")
-        print(string)
-    if not any(x in string for x in no_green) and string != 'false' and not is_number(string):
-        colors.append("Green")
-        print(string)
-    if not any(x in string for x in no_red) and string != 'false' and not is_number(string):
-        colors.append("Red")
-        print(string)
+    isall = False
+    isnone = False
+    is4 = False
+    is3 = False
+    is2 = False
+    is1 = False
+    mana_cost = str.split(string)
 
-print(len(colors))
+    if all(item in mana_cost for item in wubrg):
+        colors.append("All Colors")
+        isall = True
+    if not any(item in mana_cost for item in wubrg) and isall is False and "false" in mana_cost or len(mana_cost) == 1 and is_number(mana_cost[0]):
+        colors.append("Colorless")
+        isnone = True
+    for nephilim in four_colors:
+        if all(item in mana_cost for item in nephilim) and isall is False and isnone is False:
+            colors.append(" ".join(nephilim))
+            is4 = True
+    for shardOrClan in three_colors:
+        if all(item in mana_cost for item in shardOrClan) and isall is False and isnone is False and is4 is False:
+            colors.append(" ".join(shardOrClan))
+            is3 = True
+    for guild in two_colors:
+        if all(item in mana_cost for item in
+               guild) and isall is False and isnone is False and is4 is False and is3 is False:
+            colors.append(" ".join(guild))
+            is2 = True
+    if "White" in mana_cost and isall is False and isnone is False and is4 is False and is3 is False and is2 is False and is1 is False:
+        colors.append("White")
+        is1 = True
+    if "Blue" in mana_cost and isall is False and isnone is False and is4 is False and is3 is False and is2 is False and is1 is False:
+        colors.append("Blue")
+        is1 = True
+    if "Black" in mana_cost and isall is False and isnone is False and is4 is False and is3 is False and is2 is False and is1 is False:
+        colors.append("Black")
+        is1 = True
+    if "Red" in mana_cost and isall is False and isnone is False and is4 is False and is3 is False and is2 is False and is1 is False:
+        colors.append("Red")
+        is1 = True
+    if "Green" in mana_cost and isall is False and isnone is False and is4 is False and is3 is False and is2 is False and is1 is False:
+        colors.append("Green")
+        is1 = True
+    if isall is False and isnone is False and is4 is False and is3 is False and is2 is False and is1 is False:
+        print(mana_cost)
 
 data["Color"] = colors
 
-print(data["Color"].value_counts())
+counts = data["Color"].value_counts()
+
+barlist = plt.barh(counts.index, counts.tolist())
+plt.show()
