@@ -40,7 +40,7 @@ def scrape():
     options = Options()
     options.headless = True
     driver = webdriver.Chrome(executable_path="C:/Users/hayde/Downloads/chromedriver.exe", options=options)
-    URL = "https://gatherer.wizards.com/Pages/Search/Default.aspx?action=advanced&name=|[a]|[b]|[c]|[d]|[e]|[f]|[g]|[h]|[i]|[j]|[k]|[l]|[m]|[n]|[o]|[p]|[q]|[r]|[s]|[t]|[u]|[v]|[w]|[x]|[y]|[z] "
+    URL = "https://gatherer.wizards.com/Pages/Search/Default.aspx?action=advanced&name=|[a]|[b]|[c]|[d]|[e]|[f]|[g]|[h]|[i]|[j]|[k]|[l]|[m]|[n]|[o]|[p]|[q]|[r]|[s]|[t]|[u]|[v]|[w]|[x]|[y]|[z]&text=+![mutate]"
     driver.get(URL)
     win_list = driver.window_handles
     driver.switch_to.window(win_list[-1])
@@ -856,7 +856,8 @@ def mongoDbToCSV(mongo_client):
 
 
 def main():
-    scrape()
+        scrape()
+
 
 
 def existsElement(id, driver):
