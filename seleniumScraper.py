@@ -774,8 +774,8 @@ def scrape():
         for j in pages:
             if j.text.isnumeric():
                 if int(j.text) > f:
-                    privacy_button = driver.find_element_by_class_name("close-me")
-                    privacy_button.click()
+                    # privacy_button = driver.find_element_by_class_name("close-me")
+                    # privacy_button.click()
                     print("Target Page: " + str(j.text))
                     j.click()
                     win_list = driver.window_handles
